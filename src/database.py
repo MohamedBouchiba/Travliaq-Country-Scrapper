@@ -16,7 +16,15 @@ class Database:
 
     def connect(self):
         try:
-            self.client = MongoClient(settings.MONGODB_URI)
+            # Add explicit TLS/SSL parameters for MongoDB Atlas
+            self.client = MongoClient(
+                settings.MONGODB_URI,
+                tls=True,
+                tlsAllowInvalidCertificates=False,
+                serverSelectionTimeoutMS=30000,
+                connectTimeoutMS=30000,
+                socketTimeoutMS=30000
+            )
             # Verify connection
             self.client.admin.command('ping')
             self.db = self.client[settings.DB_NAME]
