@@ -16,14 +16,12 @@ class Database:
 
     def connect(self):
         try:
-            # Add explicit TLS/SSL parameters for MongoDB Atlas
+            # Let pymongo auto-configure TLS from the connection string
+            # MongoDB Atlas URIs with +srv automatically enable TLS
             self.client = MongoClient(
                 settings.MONGODB_URI,
-                tls=True,
-                tlsAllowInvalidCertificates=True,  # Workaround for SSL issues
                 serverSelectionTimeoutMS=30000,
-                connectTimeoutMS=30000,
-                socketTimeoutMS=30000
+                connectTimeoutMS=30000
             )
             # Verify connection
             self.client.admin.command('ping')
