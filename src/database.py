@@ -16,10 +16,11 @@ class Database:
 
     def connect(self):
         try:
-            # Let pymongo auto-configure TLS from the connection string
-            # MongoDB Atlas URIs with +srv automatically enable TLS
+            import certifi
+            # Explicitly use certifi's CA bundle for SSL verification
             self.client = MongoClient(
                 settings.MONGODB_URI,
+                tlsCAFile=certifi.where(),
                 serverSelectionTimeoutMS=30000,
                 connectTimeoutMS=30000
             )
