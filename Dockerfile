@@ -1,12 +1,14 @@
-FROM python:3.10-slim
+FROM python:3.10
 
 WORKDIR /app
 
-# Install system dependencies including SSL/TLS support
+# Install system dependencies including comprehensive SSL/TLS support
 RUN apt-get update && apt-get install -y \
     curl \
     ca-certificates \
     openssl \
+    libssl-dev \
+    build-essential \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
