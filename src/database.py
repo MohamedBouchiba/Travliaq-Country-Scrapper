@@ -16,13 +16,11 @@ class Database:
 
     def connect(self):
         try:
-            import ssl
             # Add explicit TLS/SSL parameters for MongoDB Atlas
             self.client = MongoClient(
                 settings.MONGODB_URI,
                 tls=True,
                 tlsAllowInvalidCertificates=True,  # Workaround for SSL issues
-                ssl_cert_reqs=ssl.CERT_NONE,
                 serverSelectionTimeoutMS=30000,
                 connectTimeoutMS=30000,
                 socketTimeoutMS=30000
