@@ -16,11 +16,9 @@ class Database:
 
     def connect(self):
         try:
-            import certifi
-            # Explicitly use certifi's CA bundle for SSL verification
+            # Simplify connection: pymongo[srv] handles TLS automatically for Atlas
             self.client = MongoClient(
                 settings.MONGODB_URI,
-                tlsCAFile=certifi.where(),
                 serverSelectionTimeoutMS=30000,
                 connectTimeoutMS=30000
             )
