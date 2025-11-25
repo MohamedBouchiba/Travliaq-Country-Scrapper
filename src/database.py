@@ -16,9 +16,13 @@ class Database:
 
     def connect(self):
         try:
-            # Simplify connection: pymongo[srv] handles TLS automatically for Atlas
+            import certifi
+            # Configure TLS with certifi and allow invalid certificates to bypass handshake errors
             self.client = MongoClient(
                 settings.MONGODB_URI,
+                tlsCAFile=certifi.where(),
+                tls=True,
+                tlsAllowInvalidCertificates=True,
                 serverSelectionTimeoutMS=30000,
                 connectTimeoutMS=30000
             )
