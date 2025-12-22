@@ -1,0 +1,104 @@
+# Scripts de Migration MongoDB → PostgreSQL/Supabase
+
+Scripts pour migrer les données de pays et de villes depuis MongoDB vers PostgreSQL/Supabase.
+
+## 🚀 Utilisation
+
+### Depuis le répertoire racine
+
+```bash
+# Tester les connexions
+.venv/Scripts/python.exe -m src.migration.test_connection
+
+# Migrer uniquement les pays
+.venv/Scripts/python.exe -m src.migration.migrate_to_postgres
+
+# Migrer uniquement les villes
+.venv/Scripts/python.exe -m src.migration.migrate_cities_to_postgres
+
+# Migrer tout (pays + villes)
+.venv/Scripts/python.exe -m src.migration.migrate_all
+```
+
+### Depuis le répertoire src/migration
+
+```bash
+cd src/migration
+
+# Tester les connexions
+../../.venv/Scripts/python.exe test_connection.py
+
+# Migrer uniquement les pays
+../../.venv/Scripts/python.exe migrate_to_postgres.py
+
+# Migrer uniquement les villes
+../../.venv/Scripts/python.exe migrate_cities_to_postgres.py
+
+# Migrer tout (pays + villes)
+../../.venv/Scripts/python.exe migrate_all.py
+```
+
+## 📁 Structure
+
+```
+src/migration/
+├── __init__.py                      # Module Python
+├── README.md                        # Ce fichier
+├── test_connection.py               # Test des connexions
+├── migrate_to_postgres.py           # Migration des pays
+├── migrate_cities_to_postgres.py    # Migration des villes (avec déduplication)
+└── migrate_all.py                   # Migration complète
+```
+
+## ✨ Fonctionnalités
+
+### migrate_cities_to_postgres.py
+- ✅ **Déduplication automatique** des villes avec même (slug, country_code)
+- ✅ Génération automatique des slugs
+- ✅ Création du champ location (PostGIS) depuis latitude/longitude
+- ✅ UPSERT pour éviter les duplicatas
+- ✅ Logs détaillés avec statistiques de déduplication
+
+### migrate_to_postgres.py
+- ✅ Migration des pays avec génération de slugs
+- ✅ UPSERT basé sur iso2
+- ✅ Gestion robuste des erreurs
+
+## 🐛 Correction du bug de duplicata
+
+Le script `migrate_cities_to_postgres.py` inclut maintenant une **déduplication automatique** avant l'insertion:
+
+```python
+cities_dict = {}  # Dictionnaire avec clé (slug, country_code)
+
+for city in cities:
+    key = (slug, country_code)
+
+    # Si duplicata, garder celui avec le plus de données
+    if key in cities_dict:
+        # Logique de sélection intelligente
+        ...
+
+    cities_dict[key] = city_data
+
+cities_data = list(cities_dict.values())  # Données uniques
+```
+
+Cela résout l'erreur:
+```
+ON CONFLICT DO UPDATE command cannot affect row a second time
+```
+
+## 📊 Logs exemple
+
+```
+📊 50000 villes trouvées dans MongoDB
+📝 45000 villes uniques prêtes pour l'insertion
+   5000 doublons détectés et dédupliqués
+   0 villes ignorées
+✓ 45000 villes insérées/mises à jour dans PostgreSQL
+```
+
+## 📚 Documentation complète
+
+Voir [README_MIGRATION.md](../../README_MIGRATION.md) à la racine du projet.
