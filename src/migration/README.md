@@ -36,21 +36,58 @@ cd src/migration
 
 # Migrer tout (pays + villes)
 ../../.venv/Scripts/python.exe migrate_all.py
+
+# Enrichir les populations des villes
+../../.venv/Scripts/python.exe populate_city_population.py
+```
+
+### Wrapper depuis la racine (recommandé)
+
+```bash
+# Test de l'environnement
+python test_population_setup.py
+
+# Migration MongoDB → PostgreSQL
+python migrate.py all
+
+# Enrichissement des populations
+python populate_population.py
 ```
 
 ## 📁 Structure
 
 ```
 src/migration/
-├── __init__.py                      # Module Python
-├── README.md                        # Ce fichier
-├── test_connection.py               # Test des connexions
-├── migrate_to_postgres.py           # Migration des pays
-├── migrate_cities_to_postgres.py    # Migration des villes (avec déduplication)
-└── migrate_all.py                   # Migration complète
+├── __init__.py                         # Module Python
+├── README.md                           # Ce fichier
+├── test_connection.py                  # Test des connexions
+├── migrate_to_postgres.py              # Migration des pays
+├── migrate_cities_to_postgres.py       # Migration des villes (avec déduplication)
+├── migrate_all.py                      # Migration complète
+└── populate_city_population.py ⭐      # Enrichissement population (GeoNames + Wikidata)
+
+Racine du projet:
+├── migrate.py                          # Wrapper pour migrations
+├── populate_population.py              # Wrapper pour enrichissement population
+├── test_population_setup.py            # Test environnement
+└── POPULATION_ENRICHMENT.md            # Documentation détaillée
 ```
 
 ## ✨ Fonctionnalités
+
+### populate_city_population.py ⭐ NEW
+- ✅ **Enrichissement automatique** de la colonne population
+- ✅ **GeoNames** comme source primaire (cities15000 dataset)
+- ✅ **Wikidata SPARQL** comme fallback pour villes non trouvées
+- ✅ **Matching intelligent**: exact + fuzzy (>94% similarité)
+- ✅ **Validation géographique**: distance max 30km
+- ✅ **Index spatial** pour performance optimale
+- ✅ **Progress tracking** avec tqdm
+- ✅ **Statistiques détaillées** et résumé final
+- ✅ **Batch updates** optimisés (2000 rows par batch)
+- ✅ **Gestion d'erreurs robuste** avec retry logic
+
+**Documentation complète**: [POPULATION_ENRICHMENT.md](../../POPULATION_ENRICHMENT.md)
 
 ### migrate_cities_to_postgres.py
 - ✅ **Déduplication automatique** des villes avec même (slug, country_code)
@@ -99,6 +136,27 @@ ON CONFLICT DO UPDATE command cannot affect row a second time
 ✓ 45000 villes insérées/mises à jour dans PostgreSQL
 ```
 
+## 📈 Workflow Complet Recommandé
+
+```bash
+# 1. Vérifier l'environnement
+python test_population_setup.py
+
+# 2. Migrer depuis MongoDB
+python migrate.py all
+
+# 3. Enrichir les populations
+python populate_population.py
+
+# 4. Vérifier les résultats
+# Dans PostgreSQL:
+# SELECT COUNT(*),
+#        COUNT(population) as with_pop,
+#        COUNT(*) - COUNT(population) as without_pop
+# FROM cities;
+```
+
 ## 📚 Documentation complète
 
-Voir [README_MIGRATION.md](../../README_MIGRATION.md) à la racine du projet.
+- **Migrations**: [README_MIGRATION.md](../../README_MIGRATION.md)
+- **Population Enrichment**: [POPULATION_ENRICHMENT.md](../../POPULATION_ENRICHMENT.md)
