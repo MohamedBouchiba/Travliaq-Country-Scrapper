@@ -1,5 +1,6 @@
 from src.database import Database
 from src.scrapers.base import BaseScraper
+from src.scrapers.budget_calculator import BudgetCalculatorScraper
 from typing import List
 import logging
 
@@ -24,6 +25,10 @@ class Synchronizer:
             elif mode == "frequent":
                 # In frequent mode, we run enrichment scrapers
                 active_scrapers = [s for s in self.scrapers if s.__class__.__name__ in ["WikivoyageScraper"]]
+            elif mode == "budget":
+                # In budget mode, we only run budget calculation
+                self._run_budget_calculation()
+                return
             else:
                 logger.warning(f"Unknown mode {mode}, running all scrapers")
                 active_scrapers = self.scrapers
@@ -50,5 +55,18 @@ class Synchronizer:
                     
         finally:
             self.db.close()
-        
+
         logger.info("Synchronization completed")
+
+    def _run_budget_calculation(self):
+        """Run the budget calculator and update countries."""
+        logger.info("Running budget calculation...")
+
+        budget_scraper = BudgetCalculatorScraper()
+        budgets = budget_scraper.calculate_budgets()
+
+        if budgets:
+            self.db.update_country_budgets(budgets)
+            logger.info(f"Budget calculation completed: {len(budgets)} countries updated")
+        else:
+            logger.warning("No budgets calculated")

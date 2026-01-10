@@ -3,7 +3,8 @@ from pymongo.errors import ConnectionFailure
 from src.config import settings
 from src.models import Country, City
 import logging
-from typing import List
+from typing import List, Dict, Tuple
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,36 @@ class Database:
         if operations:
             result = self.cities.bulk_write(operations)
             logger.info(f"Upserted {len(cities)} cities. Modified: {result.modified_count}, Upserted: {result.upserted_count}")
+
+    def update_country_budgets(self, budget_data: Dict[str, Tuple[float, float]]):
+        """
+        Update daily_budget_min and daily_budget_max fields for existing countries.
+
+        Args:
+            budget_data: Dictionary mapping ISO2 codes to (min, max) budget tuples
+        """
+        if not budget_data:
+            logger.warning("No budget data to update")
+            return
+
+        operations = []
+        for iso2, (min_budget, max_budget) in budget_data.items():
+            operations.append(
+                UpdateOne(
+                    {"code_iso2": iso2},
+                    {
+                        "$set": {
+                            "daily_budget_min": min_budget,
+                            "daily_budget_max": max_budget,
+                            "last_updated": datetime.utcnow()
+                        }
+                    }
+                )
+            )
+
+        if operations:
+            result = self.countries.bulk_write(operations)
+            logger.info(f"Updated budgets for {result.modified_count} countries")
 
     def close(self):
         if self.client:

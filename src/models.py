@@ -14,7 +14,11 @@ class Country(BaseModel):
     population: Optional[int] = None
     continents: Optional[List[str]] = None
     flags: Optional[Dict[str, str]] = None
-    
+
+    # Budget information (mid-range daily budget in USD)
+    daily_budget_min: Optional[float] = None
+    daily_budget_max: Optional[float] = None
+
     # Metadata
     source: str
     last_updated: datetime = Field(default_factory=datetime.utcnow)
