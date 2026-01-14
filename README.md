@@ -79,3 +79,46 @@ docker run --env-file .env travliaq-country-scrapper
 ## 🔄 Mises à jour
 
 Le script est idempotent. Il peut être lancé tous les jours sans créer de doublons (utilise `code_iso2` comme clé unique pour les pays).
+
+## 📸 Enrichissement avec Photos (NOUVEAU!)
+
+Le projet inclut maintenant un système d'enrichissement automatique des pays avec des photos d'illustration de haute qualité depuis Unsplash.
+
+### Configuration rapide
+
+1. Obtenez une clé API Unsplash gratuite: [https://unsplash.com/developers](https://unsplash.com/developers)
+2. Ajoutez-la dans votre `.env` :
+   ```ini
+   UNSPLASH_API_KEY=votre_cle_access_ici
+   ```
+
+### Utilisation
+
+```bash
+# Test rapide de l'API (sans toucher la base de données)
+python test_unsplash_quick.py
+
+# Test avec 5 pays en mode dry-run
+python enrich_countries_photos.py --dry-run --limit 5
+
+# Enrichir tous les pays
+python enrich_countries_photos.py
+```
+
+### Documentation complète
+
+📚 Consultez le guide détaillé: [GUIDE_PHOTOS_PAYS.md](GUIDE_PHOTOS_PAYS.md)
+
+Le guide comprend:
+- ✅ Configuration pas à pas
+- ✅ Exemples d'utilisation
+- ✅ Personnalisation des recherches par pays
+- ✅ Intégration frontend
+- ✅ Dépannage
+
+### Résultats attendus
+
+Pour chaque pays, les champs suivants sont ajoutés:
+- `photo_url`: URL de la photo haute qualité
+- `photo_credit`: Attribution du photographe
+- `photo_source`: Lien vers le profil du photographe

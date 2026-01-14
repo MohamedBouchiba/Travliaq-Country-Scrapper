@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     SCRAPER_MODE: str = "frequent"  # Options: "rare", "frequent"
 
+    # Unsplash API for country photos
+    UNSPLASH_API_KEY: str = ""
+
     class Config:
         env_file = ".env"
         extra = "ignore"

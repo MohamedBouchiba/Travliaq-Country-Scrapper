@@ -1,0 +1,19 @@
+# Dependencies for photo enrichment only (minimal)
+# Compatible with Python 3.13
+# Use this for quick setup: pip install -r requirements-photos.txt
+
+# MongoDB
+pymongo>=4.10.1
+
+# Data validation - latest versions compatible with Python 3.13
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+
+# HTTP requests (for Unsplash API)
+requests>=2.31.0
+
+# DNS resolution for MongoDB
+dnspython>=2.6.1
+
+# Environment variables
+python-dotenv>=1.0.1

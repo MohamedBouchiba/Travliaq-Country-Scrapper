@@ -15,6 +15,20 @@ class Country(BaseModel):
     continents: Optional[List[str]] = None
     flags: Optional[Dict[str, str]] = None
 
+    # Illustration photos (2 high-quality images for comparison)
+    photo_url_1: Optional[str] = None
+    photo_credit_1: Optional[str] = None
+    photo_source_1: Optional[str] = None
+
+    photo_url_2: Optional[str] = None
+    photo_credit_2: Optional[str] = None
+    photo_source_2: Optional[str] = None
+
+    # Legacy single photo fields (kept for backwards compatibility)
+    photo_url: Optional[str] = None
+    photo_credit: Optional[str] = None
+    photo_source: Optional[str] = None
+
     # Budget information (mid-range daily budget in USD)
     daily_budget_min: Optional[float] = None
     daily_budget_max: Optional[float] = None
